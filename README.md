@@ -1,4 +1,5 @@
 # my-first-web-scraping
+<<<<<<< HEAD
 
 This is still now dynamic. You can only see my CP Profiles 😉...
 
@@ -35,3 +36,5 @@ This is still now dynamic. You can only see my CP Profiles 😉...
    ```
 
 ![alt text](image.png)
+=======
+>>>>>>> parent of 025afb7 (just for me)

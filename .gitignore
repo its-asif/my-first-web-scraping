@@ -2,3 +2,5 @@ node_modules
 ss
 leetcode.html
 index.js
+.vercel
+vercel.json

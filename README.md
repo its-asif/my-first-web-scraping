@@ -16,7 +16,16 @@ This is still now dynamic. You can only see my CP Profiles 😉...
    ```bash
    npm install
    ```
+3. Create a .env file and enter your username and cookie(where needed)
+   ```
+   CODEFORCES_USERNAME=
+   VJUDGE_USERNAME=
+   LEETCODE_USERNAME=
+   CSES_USERNAME=
+   CSES_PHPSESSID=
+   ```
 
+   copy from here or check `.env.example` file and fill those field and copy paste into .env file
 
 ## Running Locally
 

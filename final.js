@@ -1,17 +1,25 @@
 const puppeteer = require('puppeteer');
+require('dotenv').config();
+
 
 // store all data in an object
 const data = {};
 
+const codeforcesUsername = process.env.CODEFORCES_USERNAME;
+const VjudgeUsername = process.env.VJUDGE_USERNAME;
+const LeetCodeUsername = process.env.LEETCODE_USERNAME;
+const csesUsername = process.env.CSES_USERNAME;
+const csesPHPSESSID = process.env.CSES_PHPSESSID; // cses cookie : can be found in the application tab in the browser
+
 console.log("All My Problem Solved from Different Platforms");
 
-// Codeforces Problem Solved
+//! Codeforces Problem Solved
 (async () => {
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
   await page.setViewport({ width: 1600, height: 1024, isMobile: false, isLandscape: true });
 
-  await page.goto('https://codeforces.com/profile/pinik');
+  await page.goto(`https://codeforces.com/profile/${codeforcesUsername}`);
 
   // await page.waitForSelector('#pageContent > div:nth-child(3) > div > div.info > ul > li:nth-child(1) > span.smaller > span:nth-child(2)');
 
@@ -28,35 +36,29 @@ console.log("All My Problem Solved from Different Platforms");
 })();
 
 
-// LeetCode Problem Solved
+//! LeetCode Problem Solved
+// https://alfa-leetcode-api.onrender.com/userProfile/asifhossain
+// fetch the data from the api
 (async () => {
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1600, height: 1024, isMobile: false, isLandscape: true });
-
-    // Navigate to the LeetCode profile page
-    await page.goto('https://leetcode.com/asifhossain/');
-
-    // Wait for the selector containing the desired element
-    await page.waitForSelector('#__next > div.flex.min-h-screen.min-w-\\[360px\\].flex-col.text-label-1.dark\\:text-dark-label-1.bg-layer-bg.dark\\:bg-dark-layer-bg > div.mx-auto.w-full.grow.p-4.md\\:max-w-\\[888px\\].md\\:p-6.lg\\:max-w-screen-xl > div > div.lc-lg\\:max-w-\\[calc\\(100\\%_-_316px\\)\\].w-full > div.lc-xl\\:flex-row.lc-xl\\:space-y-0.flex.w-full.flex-col.space-x-0.space-y-4.lc-xl\\:space-x-4.lc-lg\\:mt-0.mt-4 > div.min-w-max.max-w-full.w-full.flex-1 > div > div.lc-xl\\:mx-8.mx-3.flex.items-center > div.mr-8.mt-6.flex.min-w-\\[100px\\].justify-center > div > div > div > div.text-\\[24px\\].font-medium.text-label-1.dark\\:text-dark-label-1');
-
-    // Extract the text content of the desired element
-    const elementText = await page.$eval('#__next > div.flex.min-h-screen.min-w-\\[360px\\].flex-col.text-label-1.dark\\:text-dark-label-1.bg-layer-bg.dark\\:bg-dark-layer-bg > div.mx-auto.w-full.grow.p-4.md\\:max-w-\\[888px\\].md\\:p-6.lg\\:max-w-screen-xl > div > div.lc-lg\\:max-w-\\[calc\\(100\\%_-_316px\\)\\].w-full > div.lc-xl\\:flex-row.lc-xl\\:space-y-0.flex.w-full.flex-col.space-x-0.space-y-4.lc-xl\\:space-x-4.lc-lg\\:mt-0.mt-4 > div.min-w-max.max-w-full.w-full.flex-1 > div > div.lc-xl\\:mx-8.mx-3.flex.items-center > div.mr-8.mt-6.flex.min-w-\\[100px\\].justify-center > div > div > div > div.text-\\[24px\\].font-medium.text-label-1.dark\\:text-dark-label-1', element => element.textContent.trim());
-    
-    console.log("Leetcode");
-    console.log("Problem:", elementText);
-    data.leetcodeProblemsSolved = elementText;
-
-    await browser.close();
+    fetch(`https://alfa-leetcode-api.onrender.com/userProfile/${LeetCodeUsername}`)
+    .then(response => response.json())
+    .then(data => {
+        console.log("Leetcode");
+        console.log("Problems Solved:", data.totalSolved);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
 })();
 
-// Vjudge Problem Solved
+
+//! Vjudge Problem Solved
 (async () => {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.setViewport({ width: 1600, height: 1024, isMobile: false, isLandscape: true });
 
-    await page.goto('https://vjudge.net/user/asif_cs');
+    await page.goto(`https://vjudge.net/user/${VjudgeUsername}`);
 
     // await page.waitForSelector('body > div.container > div:nth-child(2) > div:nth-child(3) > table > tbody > tr:nth-child(4) > td > a');
 
@@ -69,41 +71,41 @@ console.log("All My Problem Solved from Different Platforms");
     await browser.close();
 })();
 
-// CSES
+
+//! CSES
 (async () => {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.setViewport({ width: 1600, height: 1024, isMobile: false, isLandscape: true });
 
-    await page.goto('https://cses.fi/user/118648');
+    
+    await page.setCookie({
+        name: 'PHPSESSID',
+        value: `${csesPHPSESSID}`,
+        domain: 'cses.fi',
+    });
+    
+    await page.goto('https://cses.fi/problemset/stats/friends/');
 
-    // await page.waitForSelector('body > div.skeleton > div.content-wrapper > div > table:nth-child(5) > tbody > tr > td:nth-child(2) > a');
+    // await page.waitForSelector('body > div.skeleton > div.content-wrapper > div > table:nth-child(7) > tbody > tr:nth-child(1) > td:nth-child(3)');
+    
+    const element = await page.$('body > div.skeleton > div.content-wrapper > div > table:nth-child(7) > tbody');
+    const rows = await element.$$('tr');
+    let solved = 0;
+    for (const row of rows) {
+        const username = await row.$eval('td:nth-child(2) > a', element => element.textContent.trim());
+        if (username === csesUsername) {
+            solved = await row.$eval('td:nth-child(3)', element => element.textContent.trim());
+            break;
+        }
+    }
 
-    const elementText = await page.$eval('body > div.skeleton > div.content-wrapper > div > table:nth-child(5) > tbody > tr > td:nth-child(2) > a', element => element.textContent.trim());
+    const elementText = solved;
+    
     
     console.log("CSES ");
     console.log("Problem:", elementText);
     data.csesProblemsSolved = elementText;
 
     await browser.close();
-})();
-
-
-// coding ninja
-(async () => {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1600, height: 1024, isMobile: false, isLandscape: true });
-
-  await page.goto('https://www.codingninjas.com/studio/profile/asifhossain');
-
-  // await page.waitForSelector('#app-content > codingninjas-user-dashboard > codingninjas-profile > div > div.profile-user-details-right-section.pt-40 > div.profile-user-submission-heatmap-stats.p-20 > codingninjas-profile-contribution-heatmap > div.profile-user-stats-graph-container.pl-16.mb-16 > div.total-problem-solved-container > div.total-problem-stat');
-
-  const elementText = await page.$eval('#app-content > codingninjas-user-dashboard > codingninjas-profile > div > div.profile-user-details-right-section.pt-40 > div.profile-user-submission-heatmap-stats.p-20 > codingninjas-profile-contribution-heatmap > div.profile-user-stats-graph-container.pl-16.mb-16 > div.total-problem-solved-container > div.total-problem-stat', element => element.textContent.trim());
-  
-  console.log("Coding Ninja");
-  console.log("Problem:", elementText);
-  data.codingNinjaProblemsSolved = elementText;
-
-  await browser.close();
 })();
